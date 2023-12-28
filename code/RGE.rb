@@ -3,7 +3,7 @@ def path(str, label = "")
 end
 
 def load(str)
-    puts("Launching " + str)
+    puts("Loading " + str)
     require_relative str
 end
 
@@ -14,20 +14,34 @@ def group(str)
     end
 end
 
+def all(str)
+    puts("--Loading folder " + str + "--")
+    Dir.foreach(Dir.pwd + "/../code/" + str) do |filename|
+        next if filename == "lib"
+        next if filename == '.' or filename == '..'
+        next all(filename + "/") if not filename.end_with?(".rb")
+        load Dir.pwd + "/../code/" + str + filename
+    end
+    puts ""
+end
+
+def all_self(str)
+    puts("--Loading folder " + str + "/ --")
+    Dir.foreach(Dir.pwd + "/" + str) do |filename|
+        next if filename == "lib"
+        next if filename == '.' or filename == '..'
+        next all(filename + "/") if not filename.end_with?(".rb")
+        load Dir.pwd + "/" + str  + "/" +  filename
+    end
+    puts ""
+end
+
 require 'sdl2'
-load "scene.rb"
-load "entity.rb"
-load "image.rb"
-load "save.rb"
-load "sound.rb"
-load "app.rb"
-load "graphics.rb"
 
-group("ecs")
+all("")
 
-group("entities")
-
-group("scenes")
+all_self("entities")
+all_self("scenes")
 
 include Graphics
 
