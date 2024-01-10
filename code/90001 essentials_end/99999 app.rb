@@ -29,8 +29,11 @@ class App
             bank: {},
             zoom: zoom,
             h: h,
-            w: w
+            w: w,
+            event_handler: Keyboard.new
         }
+
+
 
         $gb_var[:real_fps] = $gb_var[:fps]
         $gb_var[:renderer] = SDL.CreateRenderer($gb_var[:window], -1, 0)
@@ -56,6 +59,8 @@ class App
             rezize(sizes.call(0),sizes.call(1))
             SDL.SetWindowFullscreen($gb_var[:window],1);
         end
+
+        global_function()
 
         start() if start
     end
@@ -89,7 +94,8 @@ class App
                 $gb_var[:running] = false
             end
             #event[:key][:keysym][:sym] == SDL::SDLK_a
-            $gb_var[:current_scene].scene_event_handler(@event)
+            $gb_var[:event_handler].event = @event
+            $gb_var[:current_scene].scene_event_handler()
         end
     end
 

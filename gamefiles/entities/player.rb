@@ -10,6 +10,3 @@ class Player < EntityGroup
         add_entity(PlayerBody.new())
     end
 end
-
-
-MAJ : Folder arrangement , better entitities , better file loading , rotation + scale , optimizations , collisions

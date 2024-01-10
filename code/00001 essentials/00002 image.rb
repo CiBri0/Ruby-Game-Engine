@@ -1,8 +1,8 @@
-module Graphics
+module Graphic
     class Image
 
         attr_reader :texture
-        attr_accessor :flip, :angle, :zoom
+        attr_accessor :flip, :angle, :zoom, :center
 
         def self.load_as_surface(path)
             rwops = SDL.RWFromFile(path, 'rb')
@@ -25,6 +25,7 @@ module Graphics
             @flip = nil
             @angle = 0
             @zoom = 1
+            @center = false
         end
 =begin old
         def setup(path, renderer)
@@ -80,15 +81,15 @@ module Graphics
             @rect[:y] = y
         end
 
-        def width = @rect[:w]
+        def w = @rect[:w]
 
-        def width=(w)
+        def w=(w)
             @rect[:w] = w
         end
 
-        def height = @rect[:h]
+        def h = @rect[:h]
 
-        def height=(h)
+        def h=(h)
             @rect[:h] = h
         end
 
@@ -118,19 +119,34 @@ module Graphics
             src_rect[:y] = y
             src_rect[:w] = w
             src_rect[:h] = h
-            hw = @rect[:w]
-            hh = @rect[:h]
+
             @rect[:w] = w
             @rect[:h] = h
-            SDL.RenderCopyEx(renderer, @texture, src_rect, multiplie_rect(@rect, @zoom), @angle.to_f, nil, to_flip(@flip))
-            @rect[:w] = hw
-            @rect[:h] = hh
+
+            r = @rect
+            r = multiplie_rect(r, @zoom)
+            r = center_coord(r, @center, @zoom) if @center;
+
+            SDL.RenderCopyEx(renderer, @texture, src_rect, r, @angle.to_f, nil, to_flip(@flip))
+
         end
 
         def to_flip(flip)
-            return FLIP_HORIZONTAL if flip == 1 #horizontal
-            return FLIP_VERTICAL if flip == 0 #vertical
+            return FLIP_HORIZONTAL if flip == 1; #horizontal
+            return FLIP_VERTICAL if flip == 0; #vertical
             return FLIP_NONE
+        end
+
+        def center_coord(r, a, z)
+            t = SDL::Rect.new
+            t[:w] = r[:w]
+            t[:h] = r[:h]
+            t[:x] = r[:x] - r[:w] / 2
+            t[:y] = r[:y] - r[:h] / 2
+
+            t[:x] = t[:x] + a[0] * z; t[:y] = t[:y] + a[1] * z if a.kind_of?(Array);
+
+            return t
         end
 
         def multiplie_rect(r, z)

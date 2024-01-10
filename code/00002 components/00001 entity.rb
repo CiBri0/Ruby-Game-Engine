@@ -27,7 +27,7 @@ class Entity
         @texture.y = @y.floor()
     end
 
-    def event_handler(event) #M
+    def event_handler() #M
 
     end
 
@@ -46,7 +46,7 @@ class Entity
     def setup()
         init()
         @texture = image(@texture_path)
-        @h, @w = @texture.height, @texture.width
+        @h, @w = @texture.h, @texture.w
         texture_effect()
         post_init()
         update_coords()
@@ -64,37 +64,22 @@ class Entity
 
     end
 
-    def point_in(point_coords, quad)
-        return true if quad[0] <= point_coords[0] && point_coords[0] <= quad[2] && quad[1] <= point_coords[1] && point_coords[1] <= quad[3]
-        return false
-    end
-
-    def quad_in(quad_coord, quad)
-        # quad_coord = [[x,y],[x,y],[x,y],[x,y]]
-        for i in quad_coord do
-            return true if point_in(i, quad)
-        end
-        return false
-    end
-
-    def on_click(event, action)
-        case event[:common][:type]
-        when SDL::MOUSEBUTTONDOWN
-            if event[:button][:button] == 1
+    def on_click(action)
+        pr = Proc.new do |x,y|
 =begin
-                n = 50
-                if quad_in(
-                    [[event[:button][:x] - n, event[:button][:y] - n],
-                     [event[:button][:x] - n, event[:button][:y] + n],
-                     [event[:button][:x] + n, event[:button][:y] + n],
-                     [event[:button][:x] + n, event[:button][:y] - n]],
-                     [@x, @y, @x + @w, @y + @h])
+            n = 50
+            if quad_in(
+                [[event[:button][:x] - n, event[:button][:y] - n],
+                    [event[:button][:x] - n, event[:button][:y] + n],
+                    [event[:button][:x] + n, event[:button][:y] + n],
+                    [event[:button][:x] + n, event[:button][:y] - n]],
+                    [@x, @y, @x + @w, @y + @h])
 =end
-                if point_in([event[:button][:x],event[:button][:y]], [@x, @y, @x + @w, @y + @h])
-                    action.call(event[:button][:x], event[:button][:y])
-                end
+            if point_in([x,y], [@x, @y, @x + @w, @y + @h])
+                action.call(x, y)
             end
         end
+        $gb_var[:event_handler].on_click(1, pr)
     end
 
     def <=>(other)

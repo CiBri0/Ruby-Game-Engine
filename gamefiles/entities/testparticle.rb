@@ -14,14 +14,17 @@ class TestParticle < Particle
     end
 
     def texture_effect()
-        @texture.zoom = 2
+        @texture.zoom = 0.75
+        @texture.center = [0, -15]
     end
 
     def update()
+=begin
         @a = 0 if @a == 360
 
         @a = @a + 2
         @texture.angle = @a
+=end
     end
 
     def render() #M
