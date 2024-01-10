@@ -3,10 +3,10 @@ class Button < Entity
         @texture_path = "boss.png"
     end
 
-    def event_handler(event)
+    def event_handler()
         pro = Proc.new do |x,y|
             p [x,y]
         end
-        on_click(event, pro)
+        on_click(pro)
     end
 end

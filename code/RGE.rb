@@ -37,11 +37,12 @@ def all_self(str)
 end
 
 require 'sdl2'
+require "matrix"
 
 all("")
 
 all_self("entities")
 all_self("scenes")
 
-include Graphics
+include Graphic
 

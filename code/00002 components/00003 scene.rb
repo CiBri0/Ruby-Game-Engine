@@ -31,15 +31,15 @@ class Scene
 
     def scene_render()
         if @background.class() == Array
-            Graphics.clear(@background[0], @background[1], @background[2])
+            clear(@background[0], @background[1], @background[2])
         elsif @background.class() == Image
-            Graphics.clear(255, 255, 255)
+            clear(255, 255, 255)
             @background.render($gb_var[:renderer])
         elsif @background.class() == Proc
-            Graphics.clear(255, 255, 255)
+            clear(255, 255, 255)
             @background.call()
         else
-            Graphics.clear(255, 255, 255)
+            clear(255, 255, 255)
         end
 
         render()
@@ -69,14 +69,14 @@ class Scene
         #@entities.max_by(&:z)
     end
 
-    def scene_event_handler(event)
+    def scene_event_handler()
         @entities.each do |entity|
-            entity.event_handler(event) if entity != nil
+            entity.event_handler() if entity != nil
         end
-        event_handler(event)
+        event_handler()
     end
 
-    def event_handler(event) #M
+    def event_handler() #M
 
     end
 
