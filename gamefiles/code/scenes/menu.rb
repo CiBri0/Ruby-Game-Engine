@@ -1,6 +1,6 @@
 class Menu < Scene
     def init()
-        @background = image("bg.png")
+        @background = [100, 60, 20]
         add_entity(Flag.new)
         b = Button.new()
         b.pos = Point[50, 50]
