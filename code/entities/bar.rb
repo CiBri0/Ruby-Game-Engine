@@ -1,4 +1,3 @@
-require_relative "../entity.rb"
 
 class Bar < Entity
     attr_accessor :w, :h

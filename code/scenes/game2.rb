@@ -1,6 +1,6 @@
-class Menu < Scene
+class Game2 < Scene
     def init()
-        @background = image("bg.png")
+        @background = [20, 60, 100]
         add_entity(Flag.new)
         b = Button.new()
         b.pos = Point[50, 50]
@@ -9,7 +9,7 @@ class Menu < Scene
 
     def event_handler() #M
         click_1 = Proc.new do |mouse|
-            centisecondes = TestParticle.new()
+            centisecondes = Water.new()
             centisecondes.pos = mouse
             add_entity(centisecondes)
         end
@@ -19,7 +19,9 @@ class Menu < Scene
 
 
         click_2 = Proc.new do |x, y|
-            entities_show()
+            centisecondes = Smoke.new()
+            centisecondes.pos = mouse
+            add_entity(centisecondes)
         end
         on_right_click(click_2)
 
@@ -27,9 +29,10 @@ class Menu < Scene
 
 
         click_3 = Proc.new do |x, y|
-            $gb_var[:scene_change].call(ShapesScene.new())
+            $gb_var[:scene_change].call(Menu.new())
         end
         on_middle_click(click_3)
+
     end
 
     def update()

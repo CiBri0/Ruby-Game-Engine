@@ -1,11 +1,11 @@
 class PlayerBody < Entity
     def init()
-        @texture_path = "boss.png"
+        @texturec
     end
 end
 
 
-class Player < EntityGroup
+class Player < Group
     def init()
         add_entity(PlayerBody.new())
     end
