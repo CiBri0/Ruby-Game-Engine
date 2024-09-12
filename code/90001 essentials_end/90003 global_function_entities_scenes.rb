@@ -16,6 +16,6 @@ end
 
 def dependencies(src, deps, text)
     deps.each do |dep|
-        error("You was not included #{dep} in #{text} #{src.to_s}") if !src.components.include?(dep)
+        error("You have not included #{dep} in #{text} #{src.to_s}") if !src.components.include?(dep)
     end
 end
