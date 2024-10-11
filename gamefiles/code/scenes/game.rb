@@ -25,8 +25,10 @@ class Game < Scene
     end
 
     def update()
+        @form[@n].color = [0, 0, 0]
         for i in 0..@form.length() - 1
             next if i == @n
+            @form[i].color = [0, 0, 0]
             if collide(@form[@n], @form[i])
                 @form[@n].color = [255, 255, 0]
                 @form[i].color = [255, 255, 0]

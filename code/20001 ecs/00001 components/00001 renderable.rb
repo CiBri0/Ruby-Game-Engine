@@ -30,7 +30,6 @@ module Renderable
 
 
     def entity_update()
-
         if @render_mode == ANIMATION
             #log(@time)
             if @animation.in_anim

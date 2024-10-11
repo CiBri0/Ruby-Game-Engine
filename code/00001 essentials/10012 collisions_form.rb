@@ -161,15 +161,6 @@ class Triangle < Shape #[Point, Point, Point]
         return t
     end
 
-    def to_vert()
-        tri = []
-        mem  = FFI::MemoryPointer.new(SDL::Vertex, 3)
-        self.each_with_index  do |vec, i|
-            tri.append(vec.to_vert(mem + SDL::Vertex.size * i))
-        end
-        return mem
-    end
-
     def turn(ang)
         return r_turn_tri(self, ang, Point[(self[0][0] + self[1][0] + self[2][0]) / 3.0, (self[0][1] + self[1][1] + self[2][1]) / 3.0])
     end
@@ -243,7 +234,7 @@ class Vector #[x,y]
 
     color = [0, 0, 0]
 
-        def render()
+    def render()
         @color = [0, 0, 0] if @color == nil
 
         line(@pos, [self[0], self[1]], @color[0], @color[1], @color[2])
@@ -251,20 +242,6 @@ class Vector #[x,y]
 
     def to_vec()
         return self
-    end
-
-    def to_vert(mem)
-        fpoint = SDL::FPoint.new()
-        vert = SDL::Vertex.new(mem)
-
-        fpoint[:x], fpoint[:y] = self[0], self[1]
-        vert[:position] = fpoint
-        vert[:@color][:r] = 0
-        vert[:@color][:g] = 0
-        vert[:@color][:b] = 0
-        vert[:@color][:a] = 255
-
-        return vert
     end
 
     def to_point()

@@ -4,7 +4,6 @@ class ShapesScene < Scene
     def init()
         @points = []
         @close = false
-        @cursor = Point[0, 0]
         @vectors = []
         @wide = 10
         @t = nil
@@ -13,7 +12,7 @@ class ShapesScene < Scene
 
     def event_handler() #M
         click1 = Proc.new do |mouse|
-            @cursor = mouse
+            mouse = mouse()
             return if @close == true
             if @points.length > 2
                 if @points[0][0].between?(mouse[0] - @wide, mouse[0] + @wide) && @points[0][1].between?(mouse[1] - @wide, mouse[1] + @wide)
@@ -25,12 +24,6 @@ class ShapesScene < Scene
         end
 
         on_left_click(click1)
-
-        move1 = Proc.new do |mouse|
-            @cursor = mouse
-        end
-
-        on_move(move1)
 
         ctrl_z = Proc.new do
             @points.pop()
@@ -79,8 +72,8 @@ class ShapesScene < Scene
             point.color = [255, 0, 0]
             point.render()
         end
-        @cursor.color = [255, 0, 0]
-        @cursor.render()
+        mouse().color = [255, 0, 0]
+        mouse().render()
 
         if @t != nil
             @t.render_fill()

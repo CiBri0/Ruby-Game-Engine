@@ -25,81 +25,29 @@ end
 
 #TRIANGLE & TRIANGLE
 
-def triangle_collide(tri, tri2)
-    angles = []
+def triangle_collide(triangle1, triangle2)
+    axes = []
+    triangle1.to_vecs.each { |edge| axes << [edge[1], -edge[0]] }
+    triangle2.to_vecs.each { |edge| axes << [edge[1], -edge[0]] }
 
-    (get_lines(tri) + get_lines(tri2)).each() do |vec|
-        angles.append(get_angle(vec) + to_rad(90))
-        angles.append(get_angle(vec))
-    end
-
-    angles.each do |turn|
-        return false if !overlap(max_min(turn_tri(tri,  turn), 0),
-                                    max_min(turn_tri(tri2, turn), 0))
-    end
-
-    return true
-end
-
-def overlap(tab, tab2)
-    return tab.max > tab2.min && tab2.max > tab.min
-end
-
-def get_lines(tri)
-    return [
-        Vector[tri[0][0] - tri[1][0], tri[0][1] - tri[1][1]],
-        Vector[tri[1][0] - tri[2][0], tri[1][1] - tri[2][1]],
-        Vector[tri[2][0] - tri[0][0], tri[2][1] - tri[0][1]]
-    ]
-end
-
-def hyp(vec)
-    return Math.sqrt(vec[0] ** 2 + vec[1] ** 2)
-end
-
-def get_angle(vec)
-    return -Math.acos(vec[0] / hyp(vec))
-end
-
-def max_min(tri, cat)
-    t = []
-    tri.each do |vec|
-        c = vec[cat]
-        c = c.nan? ? 0 : c
-        t.append(c)
-    end
-    t.sort!.reverse!
-    return [t.max, t.min]
-end
-
-#TRIANGLE & CIRCLE
-
-def circle_triangle_collide(tri, cir)
-    return false
-    angles = []
-    a = [[], []]
-    tri.each do |vec|
-        v = Vector[vec[0], vec[1]]
-        v.pos = cir[0]
-        a[0].append(v)
-        a[1].append(hyp(v))
-    end
-    v1 = Vector[cir[0][0] - cir[1], cir[0][1]]
-    v1.pos = Point[cir[0][0] + cir[1], cir[0][1]]
-    (get_lines(tri).append(a[0][a[1].each_with_index.min[1]])).each() do |vec|
-        angles.append(get_angle(vec) + to_rad(90))
-        angles.append(get_angle(vec))
-    end
-
-
-    angles.each do |turn|
-        return false if !overlap(max_min(turn_tri(tri,  turn), 0),
-                                         turn_point(Vector[cir[0][0] + cir[1], cir[0][0] - cir[1]], turn))
+    axes.each do |axis|
+        min1, max1 = project_triangle(triangle1, axis)
+        min2, max2 = project_triangle(triangle2, axis)
+        return false if max1 < min2 || max2 < min1
     end
 
     return true
 end
 
+    def project_triangle(triangle, axis)
+    min = max = triangle[0][0] * axis[0] + triangle[0][1] * axis[1]
+    triangle.each do |vertex|
+        projection = vertex[0] * axis[0] + vertex[1] * axis[1]
+        min = projection if projection < min
+        max = projection if projection > max
+    end
+    return [min, max]
+end
 
 #RECT & RECT
 
@@ -150,9 +98,9 @@ end
 
 def r_turn_point(point, angle)
     x, y = point
-    radians = to_rad(angle)
-    rotated_x = Math.cos(radians) * x - Math.sin(radians) * y
-    rotated_y = Math.sin(radians) * x + Math.cos(radians) * y
+    a = to_rad(angle)
+    rotated_x = Math.cos(a) * x - Math.sin(a) * y
+    rotated_y = Math.sin(a) * x + Math.cos(a) * y
     Point[rotated_x, rotated_y]
 end
 
@@ -231,62 +179,6 @@ def move_circle(cir, vector)
     return Circle[cir[0] + vector, cir[1]]
 end
 
-
-#COLLIDE
-
-def collide(form1, form2)
-    forms = [form1, form2].sort_by!{|obj| obj.i}.reverse!
-
-    if forms[1].is_a?(Point) && forms[0].is_a?(Triangle)
-        return point_triangle_collide(forms[1], forms[0])
-    end
-
-    if forms[1].is_a?(Point) && forms[0].is_a?(Complexe)
-        forms[0].each do |tri|
-            return true if point_triangle_collide(forms[1], tri)
-        end
-        return false
-    end
-
-    if forms[1].is_a?(Triangle) && forms[0].is_a?(Triangle)
-        return triangle_collide(forms[1], forms[0])
-    end
-
-
-
-    if forms[1].is_a?(Triangle) && forms[0].is_a?(Complexe)
-        forms[0].each do |tri|
-            return true if triangle_collide(forms[1], tri)
-        end
-        return false
-    end
-
-    if forms[1].is_a?(Complexe) && forms[0].is_a?(Complexe)
-        forms[0].each do |tri|
-            forms[1].each do |tri2|
-                return true if triangle_collide(tri2, tri)
-            end
-        end
-        return false
-    end
-
-
-    # if forms[1].is_a?(Triangle) && forms[0].is_a?(Circle)
-    #     return circle_triangle_collide(forms[1], forms[0])
-    # end
-
-    # if forms[1].is_a?(Circle) && forms[0].is_a?(Complexe)
-    #     forms[0].each do |tri|
-    #         return true if circle_triangle_collide(tri, forms[1])
-    #     end
-    #     return false
-    # end
-
-    # if forms[1].is_a?(Circle) && forms[0].is_a?(Circle)
-    #     return circle_collide(forms[1], forms[0])
-    # end
-end
-
 #POLYGON
 
 def is_ear(polygon, i)
@@ -343,4 +235,60 @@ def triangulate(polygon)
     return triangles if triangles.length == c - 2
 
     return triangulate(polygon.reverse)
+end
+
+
+
+
+#COLLIDE
+
+def collide(form1, form2)
+    forms = [form1, form2].sort_by!{|obj| obj.i}.reverse!
+    if forms[1].is_a?(Point) && forms[0].is_a?(Triangle)
+        return point_triangle_collide(forms[1], forms[0])
+    end
+
+    if forms[1].is_a?(Point) && forms[0].is_a?(Complexe)
+        forms[0].each do |tri|
+            return true if point_triangle_collide(forms[1], tri)
+        end
+        return false
+    end
+
+    if forms[1].is_a?(Triangle) && forms[0].is_a?(Triangle)
+        return triangle_collide(forms[1], forms[0])
+    end
+
+    if forms[1].is_a?(Triangle) && forms[0].is_a?(Complexe)
+        forms[0].each do |tri|
+            log([forms[1], tri]) if triangle_collide(forms[1], tri)
+            return true if triangle_collide(forms[1], tri)
+        end
+        return false
+    end
+
+    if forms[1].is_a?(Complexe) && forms[0].is_a?(Complexe)
+        forms[0].each do |tri|
+            forms[1].each do |tri2|
+                return true if triangle_collide(tri2, tri)
+            end
+        end
+        return false
+    end
+
+
+    # if forms[1].is_a?(Triangle) && forms[0].is_a?(Circle)
+    #     return circle_triangle_collide(forms[1], forms[0])
+    # end
+
+    # if forms[1].is_a?(Circle) && forms[0].is_a?(Complexe)
+    #     forms[0].each do |tri|
+    #         return true if circle_triangle_collide(tri, forms[1])
+    #     end
+    #     return false
+    # end
+
+    if forms[1].is_a?(Circle) && forms[0].is_a?(Circle)
+        return circle_collide(forms[1], forms[0])
+    end
 end
